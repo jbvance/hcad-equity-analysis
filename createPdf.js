@@ -41,6 +41,11 @@ const createPdf = () => {
   let pdfmake = new Pdfmake(fonts);
   let docDefinition = {
     content: [...compsObj],
+    footer: function (currentPage, pageCount) {
+      return [
+        { text: `Page ${currentPage} of ${pageCount}`, alignment: 'center' },
+      ];
+    },
     styles: {
       header: {
         fontSize: 18,
