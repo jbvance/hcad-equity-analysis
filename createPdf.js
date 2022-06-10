@@ -28,7 +28,8 @@ for (let i = 0; i < allComps.length; i++) {
   compsObj.push(createCompSection4(allComps[i]));
 }
 
-const createPdf = () => {
+const createPdf = (req, res, next) => {
+  console.log('REQUEST', req.body);
   var fonts = {
     Roboto: {
       normal: 'fonts/roboto/Roboto-Regular.ttf',

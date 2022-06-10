@@ -6,6 +6,7 @@ const config = require('./dbconfig');
 var router = express.Router();
 const { getData } = require('./hcad_controller');
 const { createPdf } = require('./createPdf');
+const HttpError = require('./http-error');
 require('dotenv').config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,9 +19,9 @@ router.use((req, res, next) => {
   next();
 });
 
-router.route('/pdf').get((request, response) => {
-  createPdf();
-});
+router.get('/pdf', createPdf);
+
+router.post('/pdf', createPdf);
 
 router.route('/data').get((request, response) => {
   getData('0.76', '1.41', '0.76').then((data) => {
@@ -31,6 +32,19 @@ router.route('/data').get((request, response) => {
 router.route('/data/:accountId').get((req, res, next) => {
   console.log('ACCOUNT ID', req.params.accountId);
   next();
+});
+
+app.use((req, res, next) => {
+  const error = new HttpError('Could not find this route', 404);
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({ message: error.message || 'An unknown error occurred.' });
 });
 
 var port = process.env.PORT || 5000;
